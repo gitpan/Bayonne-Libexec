@@ -1,6 +1,6 @@
 package Bayonne::Libexec;
 
-use 5.008006;
+use 5.008004;
 use strict;
 use warnings;
 
@@ -26,7 +26,7 @@ our @EXPORT = qw(
 
 );
  
-our $VERSION = '0.02'; 
+our $VERSION = '0.03'; 
 
 # disable buffering
 $|=1;
@@ -158,6 +158,22 @@ sub detach($$) {
 		print STDOUT "$tsid exit $code\n";
 		$self->{'tsession'} = undef;	
 	}
+}
+
+sub error($$) {
+	my($self,$msg) = @_;
+	my($tsid) = $self->{'tsession'};
+
+	if($tsid) {
+		print STDOUT "$tsid error $msg\n";
+		$self->{'tsession'} = undef;
+	}
+}
+
+sub post($$$) {
+	my($self, $id, $value) = @_;
+	my $sid = $self->{head}{'SESSION'};
+	print STDOUT "$sid POST $id $value\n";
 }
 
 sub pathname($$) {
@@ -474,6 +490,13 @@ sub result($$) {
 	return $self->command("result $buf");
 }
 
+# transfer extension
+
+sub transfer($$) {
+	my($self, $dest) = @_;
+	return $self->command("xfer $dest");
+}
+
 # get symbol value
 
 sub get($$) {
@@ -626,10 +649,10 @@ David Sugar, E<lt>dyfet@gnutelephony.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005 by David Sugar, Tycho Softworks
+Copyright (C) 2005-2006 by David Sugar, Tycho Softworks
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
+it under the same terms as Perl itself, either Perl version 5.8.4 or,
 at your option, any later version of Perl 5 you may have available. 
 
 
